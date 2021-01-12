@@ -2,7 +2,7 @@
 # Use display_results function for options display!
 
 # Colored output for windows
-import colorama
+import colorama, json
 colorama.init()
 
 
@@ -66,7 +66,7 @@ def display_options(dictionary, full_name, html, no_console_display):
 # Output: colored separated options display
 # Sample:    ip
 #          - dhcp_snooping active        [DISABLED]
-def display_results(dictionary,html_file, no_console_display):
+def display_results(dictionary,html_file,json_file,no_console_display):
     if html_file:
         # Create and open new .html file
         with open(html_file,'w') as html:
@@ -87,8 +87,16 @@ def display_results(dictionary,html_file, no_console_display):
                 html.write('<tr><td>&nbsp;</td></tr>\n')
             # Html file ending
             html.write('</table>\n</body>\n</html>')
+    elif json_file:
+        with open(json_file, 'w', encoding='utf-8') as json_file:
+            json.dump(dictionary, json_file)
+        for key in dictionary:
+            full_name = ''
+            # Print options in this field
+            display_options(dictionary[key], full_name, False, no_console_display)
     elif not no_console_display:
         for key in dictionary:
             full_name = ''
             print('\n', bcolors.BLUE + key + bcolors.END)
             display_options(dictionary[key], full_name, html_file, no_console_display)
+

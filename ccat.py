@@ -17,17 +17,18 @@ filenames = args.getfilenames()
 vlanmap = parsing.vlanmap_parse(filenames.pop(0))
 
 # variables for html output option
-html_directory = None
+output_directory = None
 html_file = None
+json_file = None
 config_directory = args.args.configs
 # Create directory for html files output or check its existence
 if args.args.output:
-    html_directory = args.args.output
+    output_directory = args.args.output
     try:
-        os.makedirs(html_directory, exist_ok=True)
+        os.makedirs(output_directory, exist_ok=True)
     except OSError:
-        html_directory = html_directory[:-1] + '\\'
-        os.makedirs(html_directory, exist_ok=True)
+        output_directory = output_directory[:-1] + '\\'
+        os.makedirs(output_directory, exist_ok=True)
 
 # check shutdown interfaces flag
 if args.args.disabled_interfaces:
@@ -58,13 +59,15 @@ if (args.args.dump_creds):
 
 # processing configs one by one
 for filename in filenames[0]:
-
     # Define config file name
     config_name = filename.partition(config_directory)[2]
 
     # Create output html file full path if needed
-    if html_directory:
-        html_file = html_directory + config_name + '.html'
+    if output_directory:
+        if (args.args.enable_html):
+            html_file = output_directory + config_name + '.html'
+        if (args.args.enable_json):
+            json_file = output_directory + config_name + '.json'
 
     # parsing configs
     parsing.parseconfigs(filename, check_disabled)
@@ -252,7 +255,7 @@ for filename in filenames[0]:
         print(result_dict)
 
     # processing results
-    display.display_results(result_dict, html_file, no_console_display)
+    display.display_results(result_dict, html_file, json_file, no_console_display)
 
     # update progress bar if it is enabled
     if no_console_display:
